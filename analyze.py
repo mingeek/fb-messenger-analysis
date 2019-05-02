@@ -1,9 +1,7 @@
-from createdataset import *
+from sentiment import *
 import matplotlib.pyplot as plt
-import tkinter
 import pandas as pd
-from pandas.plotting import register_matplotlib_converters
-register_matplotlib_converters()
+pd.plotting.register_matplotlib_converters()
 
 
 fb_to_json()
