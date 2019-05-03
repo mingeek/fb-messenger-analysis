@@ -4,10 +4,8 @@ import pandas as pd
 import datetime
 import numpy as np
 import itertools
-
-from bs4 import BeautifulSoup
 from textblob import TextBlob
-from dateutil import parser
+pd.plotting.register_matplotlib_converters()
 
 #Input: Text to be removed and an optional list of words to remove
 #Returns: Text with removed cursewords
@@ -15,46 +13,6 @@ def remove_word(text, remove = ['fuck','bitch','shit','retard','idiot', 'sick', 
     for word in remove:
         text = text.replace(word, "")
     return text
-
-#Requirement: The Facebook messages must be in {current_dir}/messages in the way they were downloaded
-#Input: N/A 
-#Returns: N/A
-def fb_to_json():
-    if not os.path.exists(os.getcwd() + '/json'):
-        os.makedirs(os.getcwd() + '/json')    
-    for root, dirs, files in os.walk('messages'): 
-        for dir in dirs:
-            curr_dir = os.getcwd() + '/messages/' + dir
-            for file in os.listdir(curr_dir):
-                if file.endswith(".html"):
-                    with open(curr_dir + '/' + file, "rb") as fp:
-                        soup = BeautifulSoup(fp, 'lxml')
-
-                        conv_name = soup.find('div', {'class' : '_3b0d'}).text #The first word in message1.html is always the friend's name
-                        messages = soup.findAll('div', {'class' : '_2let'})
-                        message_list = []
-                        friend = dir.split('_')[0]
-                        for message in messages:
-
-                            sender = message.previous_sibling.text
-                            div = message.findChild()
-                            if len(div.findChildren()) == 4:#otherwise it's an image or file or something
-                                text = div.findChildren()[1].text
-                                date = parser.parse(message.next_sibling.text).isoformat()
-                                sent = False
-                                if conv_name != sender:
-                                    sent = True #Sent by you
-                                message = {
-                                    "friend": friend,
-                                    "sent": sent,
-                                    "text": text,   
-                                    "date": date
-                                }
-                                message_list.append(message)
-                        ###Do not fix duplicate names, because then you need to address it while scraping###
-                        with open('json/' + friend + '.json', 'w') as json_file:  
-                            simplejson.dump(message_list, json_file)
-        return #only go to 2nd level of dirs
 
 #Input: N/A
 #Return: A list of strings containing all chat names
@@ -83,7 +41,7 @@ def get_json(name):
 #Input: A list of JSON objects holding all the messages of a specific chat
 #Return: A list holding JSON of sentiment analysis per message
 def chat_sentiment_analysis(messages):
-    analyzed_messages = [sentiment_analysis(message) for message in messages]
+    analyzed_messages = [sentiment_analysis(message) for message in messages ]
     return analyzed_messages
 
 #Input: A list of JSON holding sentiment analysis
@@ -155,3 +113,8 @@ def split_sentiment(messages):
         "sender_sentiment": sender_sentiments,
         "recipient_sentiment": recipient_sentiments
     }
+
+#Input: A JSON of a conversation
+#Return: Returns the sentiment sorted by time instead of date
+# def sentiment_by_time(messages):
+    
