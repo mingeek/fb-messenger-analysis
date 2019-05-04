@@ -1,5 +1,5 @@
-import simplejson
 import os
+import json
 import pandas as pd
 import datetime
 import numpy as np
@@ -36,7 +36,7 @@ def sentiment_analysis(message):
 #Return: JSON of chatname
 def get_json(name):
     with open('json/' + name + '.json', 'r') as json_file:
-        return simplejson.load(json_file)
+        return json.load(json_file)
 
 #Input: A list of JSON objects holding all the messages of a specific chat
 #Return: A list holding JSON of sentiment analysis per message

@@ -1,5 +1,5 @@
-import simplejson
 import os
+import json
 from bs4 import BeautifulSoup
 from dateutil import parser
 from tqdm import tqdm as pbar
@@ -50,7 +50,7 @@ def fb_to_json():
                                 message_list.append(message)
                         ###Do not fix duplicate names, because then you need to address it while scraping###
                         with open('json/' + chatname + '.json', 'w') as json_file:  
-                            simplejson.dump(message_list, json_file)
+                            json.dump(message_list, json_file)
         return #only go to 2nd level of dirs
 
 def whatsapp_to_json(input):
@@ -77,4 +77,4 @@ def whatsapp_to_json(input):
                 }
                 message_list.append(message)
         with open('json/' + chatname + '_WA' + '.json', 'w') as json_file:  
-            simplejson.dump(message_list, json_file)
+            json.dump(message_list, json_file)
