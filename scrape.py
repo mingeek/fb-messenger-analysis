@@ -22,9 +22,7 @@ def fb_to_json():
                         soup = BeautifulSoup(fp, 'lxml')
                         conv_name = soup.find('div', {'class' : '_3b0d'}).text #The first word in message1.html is always the friend's name, or the group chat name
                         chatname = soup.find('div', {'class' : '_2lek'}).text
-                        print(chatname)
                         if chatname.split(' ')[0] == "Participants:": #thisisagroupchat
-                            print('this is a group')
                             your_name = chatname.split(" ")[-1]
                             group_chat = True
                         messages = soup.findAll('div', {'class' : '_2let'})
@@ -44,7 +42,7 @@ def fb_to_json():
                                 elif conv_name != sender:
                                     sent = True #Sent by you
                                 message = {
-                                    "friend": friend, #this is also the chat name
+                                    "chatname": chatname, #this is also the chat name
                                     "sent": sent,
                                     "sender": sender,
                                     "text": text,   
@@ -55,3 +53,29 @@ def fb_to_json():
                         with open('json/' + friend + '.json', 'w') as json_file:  
                             simplejson.dump(message_list, json_file)
         return #only go to 2nd level of dirs
+
+def whatsapp_to_json(input):
+    curr_dir = os.getcwd() + '/whatsappmessages/'
+    with open(curr_dir + '/' + input, "rb") as messages:
+        found_name = False
+        chatname = ''
+        message_list = []
+        for message in messages:
+            if found_name == False:
+                chatname = message.split(']')[1].split(':')[0]
+                found_name = True
+            else:
+                date_split = message.split(']')
+                date = date_split[0][1:]
+                name, text = date_split[1].split(':')[0], date_split[1].split(':')[1] #someone redo this
+                sent = (chatname == name)
+                message = {
+                    "chatname": chatname,
+                    "sent": sent,
+                    "sender": name,
+                    "text": text,
+                    "date": date
+                }
+                message_list.append(message)
+        with open('json/' + chatname + '_WA' + '.json', 'w') as json_file:  
+            simplejson.dump(message_list, json_file)

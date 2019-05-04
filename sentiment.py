@@ -45,7 +45,7 @@ def chat_sentiment_analysis(messages):
     return analyzed_messages
 
 #Input: A list of JSON holding sentiment analysis
-#Return: A tuple of lists of the average sentiment over a weekly basis (Used to be data frame, might change it back)
+#Return: A JSON of lists of the average sentiment over a weekly basis (Used to be data frame, might change it back)
 #Note: Changing the time is dependent on the resample library, in which the basis are 'D'ays, 'W'eeks, 'M'onths, etc.
 def chat_sentiment_analysis_time(messages, time='W'): 
     df = pd.io.json.json_normalize(messages)
@@ -113,6 +113,23 @@ def split_sentiment(messages):
         "sender_sentiment": sender_sentiments,
         "recipient_sentiment": recipient_sentiments
     }
+
+#Input: A JSON of a conversation
+#Return: A JSON of a list of Dates and Message Counts. 
+#This could use reworking because I literally just count the rows, no restructuring.
+def message_count_over_time(messages, time='W'): 
+    df = pd.io.json.json_normalize(messages)
+    df['date'] = pd.to_datetime(df['date'])
+    df = df.resample(time, on='date')['text'].agg('count')
+    df = df.loc[datetime.date(year=2018,month=9,day=1):datetime.date(year=2019,month=5,day=5)] #Personal Use, ignore this line
+    dates = df.index.tolist()
+    message_count = df.values.tolist()
+    return {
+        #These are lists
+        "date": dates,
+        "message_count": message_count
+    }
+
 
 #Input: A JSON of a conversation
 #Return: Returns the sentiment sorted by time instead of date
