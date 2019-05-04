@@ -54,6 +54,8 @@ def fb_to_json():
         return #only go to 2nd level of dirs
 
 def whatsapp_to_json(input):
+    if not os.path.exists(os.getcwd() + '/json'):
+        os.makedirs(os.getcwd() + '/json') 
     curr_dir = os.getcwd() + '/whatsappmessages/'
     with open(curr_dir + '/' + input, "rb") as messages:
         found_name = False
