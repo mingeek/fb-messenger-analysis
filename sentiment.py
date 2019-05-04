@@ -27,7 +27,7 @@ def get_chats_names():
 def sentiment_analysis(message):
     return {
         "date": message['date'],
-        "friend": message['friend'],
+        "chatname": message['chatname'],
         "sent": message['sent'],
         "sentiment": TextBlob(remove_word(message['text'])).sentiment[0] 
     }
@@ -67,14 +67,14 @@ def chat_sentiment_analysis_time(messages, time='W'):
 #Return: A JSON counting (#sent, #received) messages
 def message_count(messages):
     sent, received, = 0, 0
-    friend = messages[0]['friend']
+    chatname = messages[0]['chatname']
     for message in messages:
         if message['sent']:
             sent += 1
         else:
             received += 1
     return {
-        "friend": friend,
+        "chatname": chatname,
         "sent": sent,
         "received": received
     }
@@ -134,4 +134,5 @@ def message_count_over_time(messages, time='W'):
 #Input: A JSON of a conversation
 #Return: Returns the sentiment sorted by time instead of date
 # def sentiment_by_time(messages):
-    
+
+

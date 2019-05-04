@@ -7,7 +7,7 @@ from plot import *
 
 
 
-friendname = ''
+friendname = 'natalieliu'
 conv = get_json(friendname) 
 #conv = all_conversations()
 #message_count_over_time(conv)

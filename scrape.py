@@ -21,15 +21,14 @@ def fb_to_json():
                         group_chat = False
                         soup = BeautifulSoup(fp, 'lxml')
                         conv_name = soup.find('div', {'class' : '_3b0d'}).text #The first word in message1.html is always the friend's name, or the group chat name
-                        chatname = soup.find('div', {'class' : '_2lek'}).text
-                        if chatname.split(' ')[0] == "Participants:": #thisisagroupchat
-                            your_name = chatname.split(" ")[-1]
+                        participants_div = soup.find('div', {'class' : '_2lek'}).text
+                        if participants_div.split(' ')[0] == "Participants:": #thisisagroupchat
+                            your_name = participants_div.split(" ")[-1]
                             group_chat = True
                         messages = soup.findAll('div', {'class' : '_2let'})
                         message_list = []
-                        friend = dir.split('_')[0]
+                        chatname = dir.split('_')[0]
                         for message in pbar(messages, desc=conv_name):
-
                             sender = message.previous_sibling.text
                             div = message.findChild()
                             if len(div.findChildren()) == 4:#otherwise it's an image or file or something
@@ -50,7 +49,7 @@ def fb_to_json():
                                 }
                                 message_list.append(message)
                         ###Do not fix duplicate names, because then you need to address it while scraping###
-                        with open('json/' + friend + '.json', 'w') as json_file:  
+                        with open('json/' + chatname + '.json', 'w') as json_file:  
                             simplejson.dump(message_list, json_file)
         return #only go to 2nd level of dirs
 
