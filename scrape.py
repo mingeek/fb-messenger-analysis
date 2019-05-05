@@ -52,6 +52,19 @@ def fb_to_json():
                             simplejson.dump(message_list, json_file)
         return #only go to 2nd level of dirs
 
+def isLineDate(line):
+    try:
+        date = line.split(']')[0]
+    except:
+        return False
+    if len(line) >= 19 and len(line) <= 22:
+        try:
+            date = parser.parse(line[1:]).isoformat() #Assume that if a new line has 20-23 characters that are a valid date format that it is indeed a date
+            return True
+        except:
+            return False
+    return False
+
 def whatsapp_to_json(input): #This only works for iOS
     if not os.path.exists(os.getcwd() + '/json'):
         os.makedirs(os.getcwd() + '/json') 
@@ -62,12 +75,15 @@ def whatsapp_to_json(input): #This only works for iOS
         message_list = []
         for message in messages:
             message = str(message, 'utf-8')
-            date_split = message.split(']')
-            date = date = parser.parse(date_split[0][3:]).isoformat()
-            text_array = date_split[1].split(':')
-            name = text_array[0].strip()
-            text = ''.join(text_array[1:])
-            sent = (chatname.lower().replace(" ", "") == name.lower().replace(" ", ""))
+            if isLineDate:
+                date_split = message.split(']')
+                date = parser.parse(date_split[0][3:]).isoformat()
+                text_array = date_split[1].split(':')
+                name = text_array[0].strip()
+                text = ''.join(text_array[1:])
+                sent = (chatname.lower().replace(" ", "") == name.lower().replace(" ", ""))
+            else:
+                message_list[-1]['text'] = message_list[-1]['text'] + message
             message = {
                 "chatname": chatname,
                 "sent": sent,
