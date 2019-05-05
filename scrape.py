@@ -82,15 +82,15 @@ def whatsapp_to_json(input): #This only works for iOS
                 name = text_array[0].strip()
                 text = ''.join(text_array[1:])
                 sent = (chatname.lower().replace(" ", "") == name.lower().replace(" ", ""))
+                message = {
+                    "chatname": chatname,
+                    "sent": sent,
+                    "sender": name,
+                    "text": text,
+                    "date": date
+                }
+                message_list.append(message)
             else:
                 message_list[-1]['text'] = message_list[-1]['text'] + message
-            message = {
-                "chatname": chatname,
-                "sent": sent,
-                "sender": name,
-                "text": text,
-                "date": date
-            }
-            message_list.append(message)
         with open('json/' + chatname + '-WA' + '.json', 'w') as json_file:  
             json.dump(message_list, json_file)
