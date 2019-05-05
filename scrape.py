@@ -61,12 +61,9 @@ def whatsapp_to_json(input): #This only works for iOS
         found_name = False
         message_list = []
         for message in messages:
-            message = str(message)
-            message.encode('utf-8').decode('utf-8')
-            print(message)
+            message = str(message, 'utf-8')
             date_split = message.split(']')
             date = date = parser.parse(date_split[0][3:]).isoformat()
-            print(date)
             text_array = date_split[1].split(':')
             name = text_array[0].strip()
             text = ''.join(text_array[1:])
