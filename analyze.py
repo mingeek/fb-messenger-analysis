@@ -5,21 +5,21 @@ from plot import *
 
 #fb_to_json() #don't run this every time
 
+name = ''
 
-
+whatsapp_to_json(name + '.txt')
 friendname = ''
-conv = get_json(friendname) 
+conv = get_json(name + '-MA') 
 #conv = all_conversations()
 #message_count_over_time(conv)
 
 
 # Post people by conversation length
-chats = get_chats_names()
-count_ranking = []
-for chat in chats:
-    count_ranking.append((chat, len(get_json(chat))))
-count_ranking = sorted(count_ranking, key=lambda x: x[1])
-print(count_ranking)
+# chats = get_chats_names()
+# count_ranking = []
+# for chat in chats:
+#     count_ranking.append((chat, len(get_json(chat))))
+# count_ranking = sorted(count_ranking, key=lambda x: x[1])
 
 # Get counts of two ppl
 convs = split_conversation(conv)

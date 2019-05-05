@@ -7,8 +7,7 @@ from tqdm import tqdm as pbar
 
 
 #Requirement: The Facebook messages must be in {current_dir}/messages in the way they were downloaded
-#Input: N/A 
-#Returns: N/A
+#Input: N/A
 def fb_to_json():
     if not os.path.exists(os.getcwd() + '/json'):
         os.makedirs(os.getcwd() + '/json')    
@@ -50,33 +49,35 @@ def fb_to_json():
                                 message_list.append(message)
                         ###Do not fix duplicate names, because then you need to address it while scraping###
                         with open('json/' + chatname + '.json', 'w') as json_file:  
-                            json.dump(message_list, json_file)
+                            simplejson.dump(message_list, json_file)
         return #only go to 2nd level of dirs
 
-def whatsapp_to_json(input):
+def whatsapp_to_json(input): #This only works for iOS
     if not os.path.exists(os.getcwd() + '/json'):
         os.makedirs(os.getcwd() + '/json') 
-    curr_dir = os.getcwd() + '/whatsappmessages/'
+    curr_dir = os.getcwd() + '/whatsappmessages'
+    chatname = input.split('.')[0]
     with open(curr_dir + '/' + input, "rb") as messages:
         found_name = False
-        chatname = ''
         message_list = []
         for message in messages:
-            if found_name == False:
-                chatname = message.split(']')[1].split(':')[0]
-                found_name = True
-            else:
-                date_split = message.split(']')
-                date = date_split[0][1:]
-                name, text = date_split[1].split(':')[0], date_split[1].split(':')[1] #someone redo this
-                sent = (chatname == name)
-                message = {
-                    "chatname": chatname,
-                    "sent": sent,
-                    "sender": name,
-                    "text": text,
-                    "date": date
-                }
-                message_list.append(message)
-        with open('json/' + chatname + '_WA' + '.json', 'w') as json_file:  
+            message = str(message)
+            message.encode('utf-8').decode('utf-8')
+            print(message)
+            date_split = message.split(']')
+            date = date = parser.parse(date_split[0][3:]).isoformat()
+            print(date)
+            text_array = date_split[1].split(':')
+            name = text_array[0].strip()
+            text = ''.join(text_array[1:])
+            sent = (chatname.lower().replace(" ", "") == name.lower().replace(" ", ""))
+            message = {
+                "chatname": chatname,
+                "sent": sent,
+                "sender": name,
+                "text": text,
+                "date": date
+            }
+            message_list.append(message)
+        with open('json/' + chatname + '-WA' + '.json', 'w') as json_file:  
             json.dump(message_list, json_file)
