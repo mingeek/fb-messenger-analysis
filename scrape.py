@@ -62,6 +62,8 @@ def fb_to_json():
 # }
 # participants:{}
 # }
+
+# The dependency is MISSING. Do not try to run this function.
 def wa_to_json(input, yourname, device='iphone'):
     source = input + '.txt'
     destination = '/json/' + input.split('.')[0] + '-WA.json'

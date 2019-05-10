@@ -6,6 +6,8 @@ A sentiment analysis of FB Messenger conversations
 
 - Place your Facebook messages in your current directories "/messages/" folder. The Facebook messages when downloaded are in separate folders. Copy all of those folders into the /messages/ folder.
 
+- install Python (currently uses Python 3.5, not sure about compatability with other version of Python)
+
 - install requirements.txt
 
 - python3 analyze.py
