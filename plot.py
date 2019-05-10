@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 
-def plot_one(x, y, title, ylabel):
+def plot_one(graph, title='Graph'):
     f, ax = plt.subplots()
-    ax.plot(x, y, 'b')
+    ax.plot(graph['x'], graph['y'], 'b')
     ax.set_title(title)
-    ax.set_ylabel(ylabel)
+    ax.set_ylabel(graph['label'])
     plt.gcf().autofmt_xdate()
     plt.grid(True, which='both')
     plt.show()

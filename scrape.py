@@ -3,6 +3,7 @@ import json
 from bs4 import BeautifulSoup
 from dateutil import parser
 from tqdm import tqdm as pbar
+from whatsapptojson import whatsapptojson
 
 
 
@@ -49,48 +50,19 @@ def fb_to_json():
                                 message_list.append(message)
                         ###Do not fix duplicate names, because then you need to address it while scraping###
                         with open('json/' + chatname + '.json', 'w') as json_file:  
-                            simplejson.dump(message_list, json_file)
+                            json.dump(message_list, json_file, indent=2)
         return #only go to 2nd level of dirs
 
-def isLineDate(line):
-    try:
-        date = line.split(']')[0]
-    except:
-        return False
-    if len(line) >= 19 and len(line) <= 22:
-        try:
-            date = parser.parse(line[1:]).isoformat() #Assume that if a new line has 20-23 characters that are a valid date format that it is indeed a date
-            return True
-        except:
-            return False
-    return False
-
-def whatsapp_to_json(input): #This only works for iOS
-    if not os.path.exists(os.getcwd() + '/json'):
-        os.makedirs(os.getcwd() + '/json') 
-    curr_dir = os.getcwd() + '/whatsappmessages'
-    chatname = input.split('.')[0]
-    with open(curr_dir + '/' + input, "rb") as messages:
-        found_name = False
-        message_list = []
-        for message in messages:
-            message = str(message, 'utf-8')
-            if isLineDate:
-                date_split = message.split(']')
-                date = parser.parse(date_split[0][3:]).isoformat()
-                text_array = date_split[1].split(':')
-                name = text_array[0].strip()
-                text = ''.join(text_array[1:])
-                sent = (chatname.lower().replace(" ", "") == name.lower().replace(" ", ""))
-                message = {
-                    "chatname": chatname,
-                    "sent": sent,
-                    "sender": name,
-                    "text": text,
-                    "date": date
-                }
-                message_list.append(message)
-            else:
-                message_list[-1]['text'] = message_list[-1]['text'] + message
-        with open('json/' + chatname + '-WA' + '.json', 'w') as json_file:  
-            json.dump(message_list, json_file)
+#Requirement: The Facebook messages must be in {current_dir}/whatsappmessages in the way they were downloaded
+#Input: N/A
+#Returns: JSON of this format [This is currently different than the Facebook format]
+#{
+# chats:{
+#   messages:[]
+# }
+# participants:{}
+# }
+def wa_to_json(input, yourname, device='iphone'):
+    source = input + '.txt'
+    destination = '/json/' + input.split('.')[0] + '-WA.json'
+    whatsapptojson.format_file(source=source, destination=destination, yourname=yourname, device=device)

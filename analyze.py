@@ -1,100 +1,90 @@
 from sentiment import *
 from scrape import *
 from plot import *
+from copy import deepcopy
+from pprint import pprint
 
 
-#fb_to_json() #don't run this every time
-
-name = ''
-
-whatsapp_to_json(name + '.txt')
-friendname = ''
-conv = get_json(name + '-MA') 
-#conv = all_conversations()
-#message_count_over_time(conv)
-
-
-# Post people by conversation length
-# chats = get_chats_names()
-# count_ranking = []
-# for chat in chats:
-#     count_ranking.append((chat, len(get_json(chat))))
-# count_ranking = sorted(count_ranking, key=lambda x: x[1])
-
-# Get counts of two ppl
-convs = split_conversation(conv)
-my_count, their_count = message_count_over_time(convs['sent']), message_count_over_time(convs['received'])
-
-# Get sentiments of two ppl
-sentiments = split_sentiment(conv)
-me, them = sentiments['sender_sentiment'], sentiments['recipient_sentiment']
-
-sentiment_graph = [
+def get_sentiment_graph(name):
+    conv = get_json(name)
+    sentiments = split_sentiment(conv)
+    sender_sent, recipient_sent = sentiments['sender_sentiment'], sentiments['recipient_sentiment']
+    sentiment_graph = [
     {
-            "x": me['date'],
-            "y": me['sentiment'],
-            "label": 'My Sentiment'
+            "x": sender_sent['date'],
+            "y": sender_sent['sentiment'],
+            "label": 'My Sentiment' #'My' sentiment for now, might change that to name
     },
     {
-            "x": them['date'],
-            "y": them['sentiment'],
+            "x": recipient_sent['date'],
+            "y": recipient_sent['sentiment'],
             "label": 'Their Sentiment'
     }
-]
+    ]
+    plot_multi(sentiment_graph, ' Sentiment')
 
-graphs = [
+def get_all_sentiments():
+    convs = all_conversations()
+    sentiments = chat_sentiment_analysis(convs)
+    sentim_time = chat_sentiment_analysis_time(sentiments)
+    sentiment_graph = {
+            "x": sentim_time['date'],
+            "y": sentim_time['sentiment'],
+            "label": 'My Sentiment' #'My' sentiment for now, might change that to name
+    }
+    plot_one(sentiment_graph, 'Sentiment')
+
+def get_count_graph(name):
+    conv = get_json(name)
+    convs = split_conversation(conv)
+    sender_count, recipient_count = message_count_over_time(convs['sent']), message_count_over_time(convs['received'])
+    graphs = [
         {
-            "x": me['date'],
-            "y": my_count['message_count'],
+            "x": sender_count['date'],
+            "y": sender_count['message_count'],
             "label": 'My #'
         },
         {
-            "x": me['date'],
-            "y": their_count['message_count'],
+            "x": recipient_count['date'],
+            "y": recipient_count['message_count'],
             "label": 'Their #'
         }
-        ]
-
-graphset = [
-    [
-        {
-            "x": my_count['date'],
-            "y": my_count['message_count'],
-            "label": 'My #',
-            "ylabel": "Message Count"
-        },
-        # {
-        #     "x": their_count['date'],
-        #     "y": their_count['message_count'],
-        #     "label": 'Their #',
-        #     "ylabel": "Message Count"
-        # }
-    ],
-
-    [
-        {
-            "x": me['date'],
-            "y": me['sentiment'],
-            "label": 'My sentiment',
-            "ylabel": "Sentiment"
-        },
-        # {
-        #     "x": them['date'],
-        #     "y": them['sentiment'],
-        #     "label": 'Their sentiment',
-        #     "ylabel": "Sentiment"
-        # },
     ]
-]
+    plot_multi(graphs, 'Message Count')
 
+def get_all_count():
+    convs = all_conversations()
+    message_count = message_count_over_time(convs)
+    graph = {
+            "x": message_count['date'],
+            "y": message_count['message_count'],
+            "label": 'My #'
+    }
+    plot_one(graph, 'Message Count')
 
+#message_count_over_time(conv)
 
-#plot_multi_two(graphset, 'Message/Sentiments')
+# Get counts of two ppl
 
-#plot_multi(graphs, 'Message/Sentiments')
+if __name__ == '__main__':
+    print("Welcome to Facebook Messenger Analysis. Enter 'q' to quit")
+    text_input = input("Convert Facebook messages? Only do this once (y/n):").lower()
+    if text_input == 'y':
+        fb_to_json() #don't run this every time
 
-#plot_two(my_count['date'], my_count['message_count'], their_count['date'], their_count['message_count'], 'Message Count')
-
-
-
-plot_multi(sentiment_graph, friendname + ' Sentiment')
+    while True:
+        text_input = input('Name of conversation (first and last name of friend, no spaces): ').lower()
+        if text_input == 'q':
+            break
+        else:
+            if(get_json(text_input)):
+                get_sentiment_graph(text_input)
+                get_count_graph(text_input)
+        text_input = input('Check another friend? (y/n): ')
+        if text_input == 'y':
+            continue
+        text_input = input('View analysis of all chats? (y/n): ').lower()
+        if text_input == 'y':
+            get_all_sentiments()
+            get_all_count()
+            break
