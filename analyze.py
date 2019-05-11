@@ -1,12 +1,13 @@
 from sentiment import *
 from scrape import *
 from plot import *
+from cli_helper import *
 from copy import deepcopy
 from pprint import pprint
 
 
 def get_sentiment_graph(name):
-    conv = get_json(name)
+    conv = get_json(name)['messages']
     sentiments = split_sentiment(conv)
     sender_sent, recipient_sent = sentiments['sender_sentiment'], sentiments['recipient_sentiment']
     sentiment_graph = [
@@ -35,7 +36,7 @@ def get_all_sentiments():
     plot_one(sentiment_graph, 'Sentiment')
 
 def get_count_graph(name):
-    conv = get_json(name)
+    conv = get_json(name)['messages']
     convs = split_conversation(conv)
     sender_count, recipient_count = message_count_over_time(convs['sent']), message_count_over_time(convs['received'])
     graphs = [
@@ -64,13 +65,13 @@ def get_all_count():
 
 #message_count_over_time(conv)
 
-# Get counts of two ppl
-
 if __name__ == '__main__':
     print("Welcome to Facebook Messenger Analysis. Enter 'q' to quit")
     text_input = input("Convert Facebook messages? Only do this once (y/n):").lower()
     if text_input == 'y':
         fb_to_json() #don't run this every time
+    text_input = input("Sort friends by gender (y/n):").lower()
+
 
     while True:
         text_input = input('Name of conversation (first and last name of friend, no spaces): ').lower()

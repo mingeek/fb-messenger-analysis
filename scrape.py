@@ -27,6 +27,7 @@ def fb_to_json():
                             group_chat = True
                         messages = soup.findAll('div', {'class' : '_2let'})
                         message_list = []
+                        participants = {}
                         chatname = dir.split('_')[0]
                         for message in pbar(messages, desc=conv_name):
                             sender = message.previous_sibling.text
@@ -48,7 +49,12 @@ def fb_to_json():
                                     "date": date
                                 }
                                 message_list.append(message)
+                                participants.add(sender)
                         ###Do not fix duplicate names, because then you need to address it while scraping###
+                        store = {
+                            messages: message_list,
+                            participants: sender
+                        }
                         with open('json/' + chatname + '.json', 'w') as json_file:  
                             json.dump(message_list, json_file, indent=2)
         return #only go to 2nd level of dirs

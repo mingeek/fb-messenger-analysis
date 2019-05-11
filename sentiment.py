@@ -62,7 +62,6 @@ def chat_sentiment_analysis_time(messages, time='W'):
         "date": dates,
         "sentiment": sentiments
     }
-    #return df
 
 #Input: A list of JSON containing messages
 #Return: A JSON counting (#sent, #received) messages
@@ -85,7 +84,7 @@ def message_count(messages):
 #Return: JSON of all messages amongst all conversations
 def all_conversations():
     chats = get_chats_names()
-    convs = [get_json(chat) for chat in chats]
+    convs = [get_json(chat)['messages'] for chat in chats]
     all_convs = list(itertools.chain.from_iterable(convs))
     return all_convs
 
@@ -138,5 +137,3 @@ def message_count_over_time(messages, time='W'):
 #Input: A JSON of a conversation
 #Return: Returns the sentiment sorted by time instead of date
 # def sentiment_by_time(messages):
-
-
