@@ -8,13 +8,6 @@ from tqdm import tqdm as pbar
 from textblob import TextBlob
 pd.plotting.register_matplotlib_converters()
 
-#Input: Text to be removed and an optional list of words to remove
-#Returns: Text with cursewords removed
-def remove_word(text, remove = ['fuck','bitch','shit','idiot', 'sick', 'lit']): #cursewords only used in derogatry manners not set by default
-    for word in remove:
-        text = text.replace(word, "")
-    return text
-
 #Input: N/A
 #Return: A list of strings containing all chat names
 def get_chats_names():
@@ -22,16 +15,6 @@ def get_chats_names():
     for file in os.listdir(os.getcwd() + '/json'):
         chat_names.append(file.split('.')[0])
     return chat_names
-
-#Input: JSON of message
-#Return: JSON holding sentiment analysis on a given message
-def sentiment_analysis(message):
-    return {
-        "date": message['date'],
-        "chatname": message['chatname'],
-        "sent": message['sent'],
-        "sentiment": TextBlob(remove_word(message['text'])).sentiment[0] 
-    }
 
 #Input: String input 
 #Return: JSON of chatname
@@ -42,15 +25,14 @@ def get_json(name):
 
 #Input: A list of JSON objects holding all the messages of a specific chat
 #Return: A list holding JSON of sentiment analysis per message
-def chat_sentiment_analysis(messages):
-    pprint("Analyzing Sentiment...")
-    analyzed_messages = [sentiment_analysis(message) for message in pbar(messages) ]
+def get_chat_sentiment(messages):
+    analyzed_messages = [message['sentiment'] for message in pbar(messages) ]
     return analyzed_messages
 
 #Input: A list of JSON holding sentiment analysis
 #Return: A JSON of lists of the average sentiment over a weekly basis (Used to be data frame, might change it back)
 #Note: Changing the time is dependent on the resample library, in which the basis are 'D'ays, 'W'eeks, 'M'onths, etc.
-def chat_sentiment_analysis_time(messages, time='W'): 
+def sentiment_over_time(messages, time='W'): 
     df = pd.io.json.json_normalize(messages)
     df['date'] = pd.to_datetime(df['date'])
     df = df[df.sentiment != 0]
@@ -111,10 +93,10 @@ def split_sentiment(messages):
     split = split_conversation(messages)
     sender = split['sent']
     recipient = split['received']
-    sender = chat_sentiment_analysis(sender)
-    recipient = chat_sentiment_analysis(recipient)
-    sender_sentiments = chat_sentiment_analysis_time(sender)
-    recipient_sentiments = chat_sentiment_analysis_time(recipient)
+    sender = get_chat_sentiment(sender)
+    recipient = get_chat_sentiment(recipient)
+    sender_sentiments = sentiment_over_time(sender)
+    recipient_sentiments = sentiment_over_time(recipient)
     return {
         "sender_sentiment": sender_sentiments,
         "recipient_sentiment": recipient_sentiments

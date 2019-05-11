@@ -3,9 +3,16 @@ import json
 from bs4 import BeautifulSoup
 from dateutil import parser
 from tqdm import tqdm as pbar
+from textblob import TextBlob
 from whatsapptojson import whatsapptojson
 
 
+#Input: Text to be removed and an optional list of words to remove
+#Returns: Text with cursewords removed
+def remove_word(text, remove = ['fuck','bitch','shit','idiot', 'sick', 'lit']): #cursewords only used in derogatry manners not set by default
+    for word in remove:
+        text = text.replace(word, "")
+    return text
 
 #Requirement: The Facebook messages must be in {current_dir}/messages in the way they were downloaded
 #Input: N/A
@@ -36,6 +43,7 @@ def fb_to_json():
                             if len(div.findChildren()) == 4:#otherwise it's an image or file or something
                                 text = div.findChildren()[1].text
                                 date = parser.parse(message.next_sibling.text).isoformat()
+                                sentiment = TextBlob(remove_word(text)).sentiment[0]
                                 sent = False
                                 if group_chat:
                                     if your_name == sender:
@@ -46,7 +54,8 @@ def fb_to_json():
                                     "chatname": chatname, #this is also the chat name
                                     "sent": sent,
                                     "sender": sender,
-                                    "text": text,   
+                                    "text": text, 
+                                    "sentiment": sentiment,  
                                     "date": date
                                 }
                                 message_list.append(message)
@@ -62,19 +71,3 @@ def fb_to_json():
         with open('friends.json', 'w') as json_file:  
             json.dump(chats, json_file, indent=2)
         return #only go to 2nd level of dirs
-
-#Requirement: The Facebook messages must be in {current_dir}/whatsappmessages in the way they were downloaded
-#Input: N/A
-#Returns: JSON of this format [This is currently different than the Facebook format]
-#{
-# chats:{
-#   messages:[]
-# }
-# participants:{}
-# }
-
-# The dependency is MISSING. Do not try to run this function.
-def wa_to_json(input, yourname, device='iphone'):
-    source = input + '.txt'
-    destination = '/json/' + input.split('.')[0] + '-WA.json'
-    whatsapptojson.format_file(source=source, destination=destination, yourname=yourname, device=device)
