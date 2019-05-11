@@ -12,6 +12,7 @@ from whatsapptojson import whatsapptojson
 def fb_to_json():
     if not os.path.exists(os.getcwd() + '/json'):
         os.makedirs(os.getcwd() + '/json')    
+    chats = {}
     for root, dirs, files in os.walk('messages'): 
         for dir in pbar(dirs, desc='Converting messages to JSON:'):
             curr_dir = os.getcwd() + '/messages/' + dir
@@ -27,7 +28,7 @@ def fb_to_json():
                             group_chat = True
                         messages = soup.findAll('div', {'class' : '_2let'})
                         message_list = []
-                        participants = {}
+                        participants = set()
                         chatname = dir.split('_')[0]
                         for message in pbar(messages, desc=conv_name):
                             sender = message.previous_sibling.text
@@ -52,11 +53,14 @@ def fb_to_json():
                                 participants.add(sender)
                         ###Do not fix duplicate names, because then you need to address it while scraping###
                         store = {
-                            messages: message_list,
-                            participants: sender
+                            "messages": message_list,
+                            "participants": sender
                         }
                         with open('json/' + chatname + '.json', 'w') as json_file:  
-                            json.dump(message_list, json_file, indent=2)
+                            json.dump(store, json_file, indent=2)
+                        chats[dir] = chatname
+        with open('friends.json', 'w') as json_file:  
+            json.dump(chats, json_file, indent=2)
         return #only go to 2nd level of dirs
 
 #Requirement: The Facebook messages must be in {current_dir}/whatsappmessages in the way they were downloaded
