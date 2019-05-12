@@ -47,23 +47,7 @@ def sentiment_over_time(messages, time='W'):
         "date": dates,
         "sentiment": sentiments
     }
-
-#Input: A list of JSON containing messages
-#Return: A JSON counting the amount of messages
-def message_count(messages):
-    sent, received, = 0, 0
-    chatname = messages[0]['chatname']
-    for message in messages:
-        if message['sent']:
-            sent += 1
-        else:
-            received += 1
-    return {
-        "chatname": chatname,
-        "sent": sent,
-        "received": received
-    }
-    #Note: Maybe combine this with split_conversation? And maybe this should contain the friend name?
+ 
 
 #Input: N/A
 #Return: JSON of all messages amongst all conversations
@@ -115,4 +99,17 @@ def message_count_over_time(messages, time='W'):
 
 #Input: A JSON of a conversation
 #Return: Returns the sentiment sorted by time instead of date
-# def sentiment_by_time(messages):
+def count_by_time(messages):
+    df = pd.io.json.json_normalize(messages)
+    df['date'] = pd.to_datetime(df['date'])
+    df = df.groupby([df['date'].dt.hour]).size()
+    #df = df.resample('H', on='date')['text'].agg('count')
+    #df = df.resample('H', on='date')['text'].agg('count')
+#   df = df.loc[datetime.date(year=2019,month=3,day=25):datetime.date(year=2019,month=5,day=5)] #Personal Use, ignore this line
+    time = df.index.tolist()
+    message_count = df.values.tolist()
+    return {
+        #These are lists
+        "time": time,
+        "message_count": message_count
+    }

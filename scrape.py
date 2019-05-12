@@ -52,7 +52,6 @@ def fb_to_json():
                                     sent = True #Sent by you
                                 message = {
                                     "chatname": chatname, #this is also the chat name
-                                    "sent": sent,
                                     "sender": sender,
                                     "text": text, 
                                     "sentiment": sentiment,  
@@ -67,7 +66,8 @@ def fb_to_json():
                         }
                         with open('json/' + chatname + '.json', 'w') as json_file:  
                             json.dump(store, json_file, indent=2)
-                        chats[dir] = chatname
+                        chats[dir] = (chatname, len(message_list))
+
         with open('friends.json', 'w') as json_file:  
             json.dump(chats, json_file, indent=2)
         return #only go to 2nd level of dirs

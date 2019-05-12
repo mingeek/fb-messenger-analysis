@@ -18,13 +18,30 @@ def main():
     elif text_input == 'q':
         return
     while True:
-        text_input = input('Name of conversation (first and last name of friend, no spaces): ').lower()
-        if text_input == 'q':
-            break
-        else:
-            if(get_json(text_input)):
-                get_sentiment_graph(text_input)
-                get_count_graph(text_input)
+        friends = {}
+        with open('friends.json', 'r') as json_file:
+            friends_list = json.load(json_file)
+        friends_list = [{"dir_name": dir_name, "name": info[0] ,"message_count": info[1]} for dir_name, info in friends_list.items()]
+        friends_list = sorted(friends_list, key = lambda friend: friend['message_count'], reverse=True)
+
+        for x in range(len(friends_list)):
+            if x%10 == 0:
+                print('Friends [' + str(x) + '-' + str(x+10) + ']')
+            print('[' + str(x%10) + '] ' + str(friends_list[x]['name']) + ' [' + str(friends_list[x]['message_count']) + ']') #make this a function maybe
+            if x%10 == 9:
+                text_input = input('Choose your conversation. \'n\' to see more conversations. \'q\' to quit.')
+                if text_input == 'q':
+                    break
+                elif text_input == 'n':
+                    continue
+                else:
+                    print(str(x))
+                    name = friends_list[int(text_input) + x-(x%10)]['name'] #make this a function maybe
+                    if(get_json(name)): #Add Try Catch here... ACTUALLY...
+                        get_sentiment_graph(name)
+                        get_count_graph(name)
+                        get_message_time_graph(name)
+                        break
         text_input = input('Check another friend? (y/n): ')
         if text_input == 'y':
             continue
@@ -34,7 +51,8 @@ def main():
         if text_input == 'y':
             get_all_sentiments()
             get_all_count()
-            break
+        break
+        
 
 if __name__ == '__main__':
     main()
