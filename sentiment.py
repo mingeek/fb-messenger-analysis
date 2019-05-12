@@ -4,6 +4,7 @@ import pandas as pd
 import datetime
 import numpy as np
 import itertools
+from pprint import pprint
 from tqdm import tqdm as pbar
 from textblob import TextBlob
 pd.plotting.register_matplotlib_converters()
@@ -26,7 +27,7 @@ def get_json(name):
 #Input: A list of JSON objects holding all the messages of a specific chat
 #Return: A list holding JSON of sentiment analysis per message
 def get_chat_sentiment(messages):
-    analyzed_messages = [message['sentiment'] for message in pbar(messages) ]
+    analyzed_messages = [{"sentiment": message['sentiment'], "date": message['date']} for message in pbar(messages) ]
     return analyzed_messages
 
 #Input: A list of JSON holding sentiment analysis
