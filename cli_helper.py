@@ -7,20 +7,15 @@ from plot import *
 
 def get_sentiment_graph(name):
     conv = get_json(name)['messages']
-    sentiments = split_sentiment(conv)
-    sender_sent, recipient_sent = sentiments['sender_sentiment'], sentiments['recipient_sentiment']
-    sentiment_graph = [
-    {
-            "x": sender_sent['date'],
-            "y": sender_sent['sentiment'],
-            "label": 'My Sentiment' #'My' sentiment for now, might change that to name
-    },
-    {
-            "x": recipient_sent['date'],
-            "y": recipient_sent['sentiment'],
-            "label": 'Their Sentiment'
-    }
-    ]
+    chats = split_sentiment(conv)
+    sentiment_graph = []
+    for chat in chats:
+        graph = {
+            "x": chat['date'],
+            "y": chat['sentiment'],
+            "label": chat['name'] + ' Sentiment'
+        }
+        sentiment_graph.append(graph)
     plot_multi(sentiment_graph, ' Sentiment')
 
 def get_all_sentiments():
@@ -36,21 +31,17 @@ def get_all_sentiments():
 
 def get_count_graph(name):
     conv = get_json(name)['messages']
-    convs = split_conversation(conv)
-    sender_count, recipient_count = message_count_over_time(convs['sent']), message_count_over_time(convs['received'])
-    graphs = [
-        {
-            "x": sender_count['date'],
-            "y": sender_count['message_count'],
-            "label": 'My #'
-        },
-        {
-            "x": recipient_count['date'],
-            "y": recipient_count['message_count'],
-            "label": 'Their #'
+    chats = split_conversation(conv)
+    count_graph = []
+    for chat in chats:
+        count = message_count_over_time(chat['messages'])
+        graph = {
+            "x": count['date'],
+            "y": count['message_count'],
+            "label": chat['name'] + ' Messages'
         }
-    ]
-    plot_multi(graphs, 'Message Count')
+        count_graph.append(graph)
+    plot_multi(count_graph, 'Message Count')
 
 def get_all_count():
     convs = all_conversations()

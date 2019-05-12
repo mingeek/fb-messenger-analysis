@@ -27,7 +27,7 @@ def get_json(name):
 #Input: A list of JSON objects holding all the messages of a specific chat
 #Return: A list holding JSON of sentiment analysis per message
 def get_chat_sentiment(messages):
-    analyzed_messages = [{"sentiment": message['sentiment'], "date": message['date']} for message in pbar(messages) ]
+    analyzed_messages = [{"sentiment": message['sentiment'], "date": message['date']} for message in messages ]
     return analyzed_messages
 
 #Input: A list of JSON holding sentiment analysis
@@ -49,7 +49,7 @@ def sentiment_over_time(messages, time='W'):
     }
 
 #Input: A list of JSON containing messages
-#Return: A JSON counting (#sent, #received) messages
+#Return: A JSON counting the amount of messages
 def message_count(messages):
     sent, received, = 0, 0
     chatname = messages[0]['chatname']
@@ -69,39 +69,32 @@ def message_count(messages):
 #Return: JSON of all messages amongst all conversations
 def all_conversations():
     chats = get_chats_names()
-    pprint("Getting all chats...")
-    convs = [get_json(chat)['messages'] for chat in pbar(chats)]
+    convs = [get_json(chat)['messages'] for chat in chats]
     all_convs = list(itertools.chain.from_iterable(convs))
     return all_convs
 
 #Input: A JSON of a conversation
-#Return: A JSON of two lists (sent, received) of messages
+#Return: A JSON of the conversation, divided by sender
 def split_conversation(messages):
-    sent, received = [], []
+    split_messages = {}
     for message in messages:
-        if message['sent']:
-            sent.append(message) 
+        if message['sender'] in split_messages:
+            split_messages[message['sender']].append(message)
         else:
-            received.append(message)
-    return {
-        "sent": sent, 
-        "received": received
-    }
+            split_messages[message['sender']] = []
+
+    return [{"name": conversation[0], "messages": conversation[1]} for conversation in split_messages.items()]
 
 #Input: A JSON of a conversation
-#Return: A JSON of the sentiments split by sent/recieved messages
+#Return: A list of JSONs of the sentiments split by person over time
 def split_sentiment(messages):
-    split = split_conversation(messages)
-    sender = split['sent']
-    recipient = split['received']
-    sender = get_chat_sentiment(sender)
-    recipient = get_chat_sentiment(recipient)
-    sender_sentiments = sentiment_over_time(sender)
-    recipient_sentiments = sentiment_over_time(recipient)
-    return {
-        "sender_sentiment": sender_sentiments,
-        "recipient_sentiment": recipient_sentiments
-    }
+    conversations = split_conversation(messages)
+    sentiments = []
+    for conversation in conversations:
+        sentiment = sentiment_over_time(get_chat_sentiment(conversation['messages']))
+        sentiment['name'] = conversation['name']
+        sentiments.append(sentiment)
+    return sentiments
 
 #Input: A JSON of a conversation
 #Return: A JSON of a list of Dates and Message Counts. 
