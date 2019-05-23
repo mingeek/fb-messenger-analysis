@@ -10,6 +10,7 @@ def plot_one(graph, title='Graph'):
     plt.show()
 
 #Input: Graphs, which is a list of objects
+#Note: Graphsize must be smaller than 8
 def plot_multi(graphs, title='Relationship Comparison', ylabel='Sentiment'):
     f, ax = plt.subplots()
     for i in range(len(graphs)): 

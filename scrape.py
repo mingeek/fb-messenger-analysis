@@ -17,6 +17,8 @@ def remove_word(text, remove = ['fuck','bitch','shit','idiot', 'sick', 'lit']): 
 #Requirement: The Facebook messages must be in {current_dir}/messages in the way they were downloaded
 #Input: N/A
 def fb_to_json():
+    if os.path.isfile(os.getcwd() + '/friends.json'):
+        os.remove(os.getcwd() + '/friends.json')
     if not os.path.exists(os.getcwd() + '/json'):
         os.makedirs(os.getcwd() + '/json')    
     chats = {}
@@ -38,6 +40,8 @@ def fb_to_json():
                         participants = set()
                         chatname = dir.split('_')[0]
                         for message in pbar(messages, desc=conv_name):
+                            if message.previous_sibling == None:
+                                continue
                             sender = message.previous_sibling.text
                             div = message.findChild()
                             if len(div.findChildren()) == 4:#otherwise it's an image or file or something

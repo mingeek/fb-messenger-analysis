@@ -75,9 +75,12 @@ def split_sentiment(messages):
     conversations = split_conversation(messages)
     sentiments = []
     for conversation in conversations:
+        if len(conversation['messages']) == 0: #Person never sent messages
+            continue
         sentiment = sentiment_over_time(get_chat_sentiment(conversation['messages']))
         sentiment['name'] = conversation['name']
         sentiments.append(sentiment)
+    
     return sentiments
 
 #Input: A JSON of a conversation
@@ -113,3 +116,10 @@ def count_by_time(messages):
         "time": time,
         "message_count": message_count
     }
+
+#Input: A JSON of the conversation
+#Returns: A list of JSONS divided by a specified time frame
+# def divide_by_time(messages, time='Y'):
+#     df = pd.io.json.json_normalize(messages)
+#     df['date'] = pd.to_datetime(df['date'])
+#     data.groupby(data.date.dt.year)

@@ -9,6 +9,16 @@ def get_sentiment_graph(name):
     conv = get_json(name)['messages']
     chats = split_sentiment(conv)
     sentiment_graph = []
+    print('FUCK')
+    # while True:
+    #     os.system("clear")
+    #     print("Select which participants to include in graph")
+    #     for x in range(len(chats)):
+    #         print('[' + str(x) + '] ' + chats[x]['name'])
+    #     index = input("[0-" + str(x) + "]")
+
+    #     #only show ten at a time, and should show by message length fuck
+    #     participants.append()
     for chat in chats:
         graph = {
             "x": chat['date'],
