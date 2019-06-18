@@ -8,7 +8,7 @@ A sentiment analysis of FB Messenger conversations
 
 - install Python (currently uses Python 3.5, not sure about compatability with other version of Python)
 
-- install requirements.txt
+- pip install -r requirements.txt
 
 - python3 analyze.py
 
