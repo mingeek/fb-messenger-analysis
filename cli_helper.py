@@ -9,7 +9,6 @@ def get_sentiment_graph(name):
     conv = get_json(name)['messages']
     chats = split_sentiment(conv)
     sentiment_graph = []
-    print('FUCK')
     # while True:
     #     os.system("clear")
     #     print("Select which participants to include in graph")

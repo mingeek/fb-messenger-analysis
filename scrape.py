@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from dateutil import parser
 from tqdm import tqdm as pbar
 from textblob import TextBlob
-from whatsapptojson import whatsapptojson
+#from whatsapptojson import whatsapptojson
 
 
 #Input: Text to be removed and an optional list of words to remove
