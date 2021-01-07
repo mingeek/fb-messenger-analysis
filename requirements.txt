@@ -2,7 +2,7 @@ beautifulsoup4==4.7.1
 bs4==0.0.1
 cycler==0.10.0
 kiwisolver==1.1.0
-lxml==4.3.3
+lxml==4.6.2
 matplotlib==3.0.3
 nltk==3.4.1
 numpy==1.16.3
